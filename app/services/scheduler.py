@@ -143,19 +143,27 @@ async def execute_full_scan_pipeline(
 
 def start_scheduler():
     """Khởi chạy Scheduler với 2 mốc thời gian: 07:00 AM và 17:00 PM hàng ngày"""
-    # 07:00 Sáng
-    scheduler.add_job(
-        execute_full_scan_pipeline,
-        trigger=CronTrigger(hour=7, minute=0),
-        id="daily_scan_morning",
-        replace_existing=True
-    )
-    # 17:00 Chiều
-    scheduler.add_job(
-        execute_full_scan_pipeline,
-        trigger=CronTrigger(hour=17, minute=0),
-        id="daily_scan_afternoon",
-        replace_existing=True
-    )
-    scheduler.start()
-    logger.info("APScheduler đã bắt đầu (Lịch chạy: 07:00 và 17:00 hàng ngày)")
+    import os
+    if os.getenv("VERCEL"):
+        logger.info("Môi trường Vercel Serverless: Sử dụng Vercel Cron Jobs thay cho APScheduler")
+        return
+    try:
+        # 07:00 Sáng
+        scheduler.add_job(
+            execute_full_scan_pipeline,
+            trigger=CronTrigger(hour=7, minute=0),
+            id="daily_scan_morning",
+            replace_existing=True
+        )
+        # 17:00 Chiều
+        scheduler.add_job(
+            execute_full_scan_pipeline,
+            trigger=CronTrigger(hour=17, minute=0),
+            id="daily_scan_afternoon",
+            replace_existing=True
+        )
+        scheduler.start()
+        logger.info("APScheduler đã bắt đầu (Lịch chạy: 07:00 và 17:00 hàng ngày)")
+    except Exception as e:
+        logger.warning(f"Không thể khởi chạy APScheduler: {e}")
+
