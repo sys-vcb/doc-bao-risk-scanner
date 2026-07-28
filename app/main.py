@@ -240,14 +240,30 @@ def get_risk_news(
 @app.get("/api/health")
 def health_check():
     import os
-    db_env = os.getenv("DATABASE_URL", "")
-    is_supabase = "supabase" in db_env or "postgres" in db_env
+    from app.database import sanitize_db_url
+    raw_env = os.getenv("DATABASE_URL", "")
+    sanitized = sanitize_db_url(raw_env)
+    
+    masked_raw = raw_env
+    if "@" in raw_env:
+        last_at = raw_env.rfind("@")
+        masked_raw = "***@" + raw_env[last_at+1:]
+
+    masked_sanitized = sanitized
+    if "@" in sanitized:
+        last_at = sanitized.rfind("@")
+        masked_sanitized = "***@" + sanitized[last_at+1:]
+
+    is_supabase = "supabase" in raw_env or "postgres" in raw_env
     return {
         "status": "OK",
         "using_supabase": is_supabase,
         "database_type": "PostgreSQL (Supabase)" if is_supabase else "SQLite (Fallback)",
-        "has_gemini_key": bool(os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY)
+        "has_gemini_key": bool(os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY),
+        "masked_raw_env": masked_raw,
+        "masked_sanitized_db_url": masked_sanitized
     }
+
 
 
 
