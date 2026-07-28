@@ -54,7 +54,8 @@ settings = Settings()
 
 # 9 Target Websites
 TARGET_SITES = [
-    {"name": "Báo Hải Phòng", "url": "https://baohaiphong.vn/phap-luat/tin-tuc", "province_hint": "Hải Phòng"},
+    {"name": "Báo Hải Phòng", "url": "https://baohaiphong.vn/phap-luat", "province_hint": "Hải Phòng"},
+
     {"name": "Báo Hưng Yên (Pháp luật)", "url": "https://baohungyen.vn/phap-luat-doi-song", "province_hint": "Hưng Yên"},
     {"name": "Báo Hưng Yên (Đời sống)", "url": "https://baohungyen.vn/doi-song", "province_hint": "Hưng Yên"},
     {"name": "Báo Ninh Bình", "url": "https://baoninhbinh.org.vn/vu-an", "province_hint": "Ninh Bình"},
