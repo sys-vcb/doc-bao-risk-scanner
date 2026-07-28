@@ -206,13 +206,22 @@ async function loadTodayNews() {
     if (!tbody) return;
 
     try {
-        const res = await fetch("/api/news?period=today");
+        let res = await fetch("/api/news?period=today");
         if (!res.ok) return;
-        const data = await res.json();
-        const items = data.items || [];
+        let data = await res.json();
+        let items = data.items || [];
+
+        // Nếu hôm nay chưa có tin mới, hiển thị toàn bộ các tin rủi ro mới nhất trong CSDL
+        if (items.length === 0) {
+            const allRes = await fetch("/api/news");
+            if (allRes.ok) {
+                const allData = await allRes.json();
+                items = allData.items || [];
+            }
+        }
 
         if (items.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">Chưa có tin rủi ro nào ghi nhận trong hôm nay.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">Chưa có tin rủi ro nào ghi nhận trong CSDL. Hãy ấn Quét Thủ Công để cào tin!</td></tr>`;
             return;
         }
 
@@ -222,6 +231,7 @@ async function loadTodayNews() {
         console.error("Lỗi tải tin hôm nay:", err);
     }
 }
+
 
 async function loadEarlierNews() {
     const tbody = document.getElementById("earlierNewsBody");
