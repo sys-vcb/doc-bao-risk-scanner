@@ -279,7 +279,33 @@ def health_check(db: Session = Depends(get_db)):
 
 
 
+@app.get("/api/debug-db")
+def debug_db(db: Session = Depends(get_db)):
+    try:
+        from app.database import db_url
+        c_risks = db.query(RiskItem).count()
+        c_articles = db.query(Article).count()
+        c_sites = db.query(MonitoredSite).count()
+        sample_risks = [i.entity_name for i in db.query(RiskItem).limit(5).all()]
+        return {
+            "status": "OK",
+            "db_url_prefix": db_url[:35] if db_url else "",
+            "risk_items_count": c_risks,
+            "articles_count": c_articles,
+            "sites_count": c_sites,
+            "sample_risks": sample_risks
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "ERROR",
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+
+
 # Pydantic Schemas cho Quản lý Trang báo
+
 class SiteCreateSchema(BaseModel):
     name: str
     url: str
