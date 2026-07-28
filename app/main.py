@@ -36,7 +36,9 @@ async def global_exception_handler(request: Request, exc: Exception):
             "error_type": type(exc).__name__,
             "message": str(exc),
             "traceback": err_tb
+        }
     )
+
 
 
 
