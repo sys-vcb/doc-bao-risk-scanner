@@ -20,13 +20,15 @@ def sanitize_db_url(raw_url: str) -> str:
             if ":" in user_pass:
                 user, pwd = user_pass.split(":", 1)
                 user = user.strip()
-                pwd = pwd.strip("[] ")
-                pwd_quoted = urllib.parse.quote(pwd, safe='')
+                pwd_clean = pwd.strip("[] ")
+                unquoted_pwd = urllib.parse.unquote(pwd_clean)
+                pwd_quoted = urllib.parse.quote(unquoted_pwd, safe='')
                 if user == "postgres" and ("supabase" in host_db or "pooler" in host_db):
                     user = "postgres.zoanjqbybeqquycdrsmx"
                 return f"postgresql+pg8000://{user}:{pwd_quoted}@{host_db}"
             return f"postgresql+pg8000://{rest}"
     return url
+
 
 
 
