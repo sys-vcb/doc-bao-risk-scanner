@@ -593,8 +593,8 @@ async function triggerManualScan() {
         const data = await res.json();
 
 
-        if (res.ok && data.status === "SUCCESS") {
-            showToast(`✅ Cào hoàn tất! Phát hiện ${data.risks_extracted} rủi ro mới.`, "success");
+        if (res.ok && (data.status === "PROCESSING" || data.status === "SUCCESS")) {
+            showToast(`⏳ ${data.message || 'Đã khởi chạy tiến trình quét ngầm thành công!'}`, "info");
             
             // Đồng bộ bộ lọc giao diện với tham số vừa quét thủ công
             if (dateFrom) currentDateFrom = dateFrom;
@@ -617,9 +617,24 @@ async function triggerManualScan() {
             loadScanLogs();
             switchTab("tab-today");
 
+            // Tự động poll làm mới dữ liệu liên tục trong 90s
+            let pollCount = 0;
+            const pollTimer = setInterval(() => {
+                pollCount++;
+                loadDashboardStats();
+                loadNewsTable();
+                loadTodayNews();
+                loadScanLogs();
+                if (pollCount >= 30) {
+                    clearInterval(pollTimer);
+                    showToast("✅ Đã tự động cập nhật xong dữ liệu từ đợt quét ngầm!", "success");
+                }
+            }, 3000);
+
         } else {
             showToast(`⚠️ Quét thất bại: ${data.message || data.error}`, "error");
         }
+
     } catch (err) {
         showToast(`❌ Lỗi hệ thống: ${err.message}`, "error");
     } finally {

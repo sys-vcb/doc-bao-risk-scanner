@@ -260,20 +260,33 @@ class ManualScanPayload(BaseModel):
     province: Optional[str] = None
     max_articles: Optional[int] = 50
 
-# API: Kích hoạt quét thủ công có lọc Khoảng thời gian & Khu vực & Số lượng bài
+async def run_bg_scan_task(d_from: Optional[str], d_to: Optional[str], prov: Optional[str], max_art: int):
+    try:
+        await execute_full_scan_pipeline(
+            date_from=d_from, 
+            date_to=d_to, 
+            selected_province=prov,
+            max_articles=max_art
+        )
+    except Exception as e:
+        print(f"Lỗi chạy background scan task: {e}")
+
+# API: Kích hoạt quét thủ công có lọc Khoảng thời gian & Khu vực & Số lượng bài (Chạy ngầm BackgroundTasks)
 @app.post("/api/scan")
-async def trigger_manual_scan(payload: Optional[ManualScanPayload] = None):
+async def trigger_manual_scan(background_tasks: BackgroundTasks, payload: Optional[ManualScanPayload] = None):
     d_from = payload.date_from if payload else None
     d_to = payload.date_to if payload else None
     prov = payload.province if payload else None
     max_art = payload.max_articles if (payload and payload.max_articles) else 50
-    result = await execute_full_scan_pipeline(
-        date_from=d_from, 
-        date_to=d_to, 
-        selected_province=prov,
-        max_articles=max_art
-    )
-    return result
+    
+    background_tasks.add_task(run_bg_scan_task, d_from, d_to, prov, max_art)
+    
+    return {
+        "status": "PROCESSING",
+        "message": f"⚡ Đã khởi chạy tiến trình cào & quét AI ngầm ({max_art} bài/báo). Hệ thống sẽ tự động cập nhật kết quả lên màn hình!",
+        "max_articles": max_art
+    }
+
 
 
 # API Endpoint cho Vercel Cron Jobs tự động kích hoạt
