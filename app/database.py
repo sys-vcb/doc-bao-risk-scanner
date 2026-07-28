@@ -30,10 +30,21 @@ db_url = sanitize_db_url(raw_db_url)
 
 
 
-# For SQLite vs PostgreSQL
-connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
-engine_kwargs = {"connect_args": connect_args, "echo": False}
+import ssl
 
+connect_args = {}
+if db_url.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+else:
+    try:
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        connect_args["ssl_context"] = ssl_ctx
+    except Exception as e:
+        print(f"SSL context setup warning: {e}")
+
+engine_kwargs = {"connect_args": connect_args, "echo": False}
 if not db_url.startswith("sqlite"):
     engine_kwargs["pool_pre_ping"] = True
 
@@ -52,21 +63,25 @@ def get_db():
 
 def init_db():
     """Khởi tạo các bảng CSDL và seed 9 trang báo mặc định nếu chưa có"""
-    from app import models
-    from app.config import TARGET_SITES
-    Base.metadata.create_all(bind=engine)
-    
-    db = SessionLocal()
     try:
-        existing_count = db.query(models.MonitoredSite).count()
-        if existing_count == 0:
-            for s in TARGET_SITES:
-                site_obj = models.MonitoredSite(
-                    name=s["name"],
-                    url=s["url"],
-                    province_hint=s.get("province_hint", "Toàn quốc")
-                )
-                db.add(site_obj)
-            db.commit()
-    finally:
-        db.close()
+        from app import models
+        from app.config import TARGET_SITES
+        Base.metadata.create_all(bind=engine)
+        
+        db = SessionLocal()
+        try:
+            existing_count = db.query(models.MonitoredSite).count()
+            if existing_count == 0:
+                for s in TARGET_SITES:
+                    site_obj = models.MonitoredSite(
+                        name=s["name"],
+                        url=s["url"],
+                        province_hint=s.get("province_hint", "Toàn quốc")
+                    )
+                    db.add(site_obj)
+                db.commit()
+        finally:
+            db.close()
+    except Exception as err:
+        print(f"Lỗi init_db trên môi trường Vercel: {err}")
+
