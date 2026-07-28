@@ -23,6 +23,23 @@ app = FastAPI(
     version="2.0.0"
 )
 
+import traceback
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    err_tb = traceback.format_exc()
+    return JSONResponse(
+        status_code=500,
+        content={
+            "status": "ERROR",
+            "error_type": type(exc).__name__,
+            "message": str(exc),
+            "traceback": err_tb
+        }
+    )
+
+
 # Mount Static Files & Templates an toàn cho Serverless
 static_dir = BASE_DIR / "app" / "static"
 if static_dir.exists():
