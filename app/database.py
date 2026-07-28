@@ -3,12 +3,31 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from app.config import settings
 
 import os
+import urllib.parse
 
-db_url = os.getenv("DATABASE_URL") or settings.DATABASE_URL
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+pg8000://", 1)
-elif db_url.startswith("postgresql://") and "+pg8000" not in db_url and "+psycopg2" not in db_url:
-    db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
+def sanitize_db_url(raw_url: str) -> str:
+    url = (raw_url or "").strip()
+    if not url or url.startswith("sqlite"):
+        return url
+    
+    if "postgres://" in url or "postgresql://" in url:
+        prefix_idx = url.find("://")
+        rest = url[prefix_idx + 3:]
+        if "@" in rest:
+            last_at = rest.rfind("@")
+            user_pass = rest[:last_at]
+            host_db = rest[last_at + 1:]
+            if ":" in user_pass:
+                user, pwd = user_pass.split(":", 1)
+                pwd = pwd.strip("[]")
+                pwd_quoted = urllib.parse.quote(pwd, safe='')
+                return f"postgresql+pg8000://{user}:{pwd_quoted}@{host_db}"
+            return f"postgresql+pg8000://{rest}"
+    return url
+
+raw_db_url = os.getenv("DATABASE_URL") or settings.DATABASE_URL
+db_url = sanitize_db_url(raw_db_url)
+
 
 
 # For SQLite vs PostgreSQL
