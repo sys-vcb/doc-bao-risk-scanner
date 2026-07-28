@@ -31,24 +31,22 @@ db_url = sanitize_db_url(raw_db_url)
 
 
 import ssl
+from sqlalchemy.pool import NullPool
 
 connect_args = {}
 if db_url.startswith("sqlite"):
     connect_args["check_same_thread"] = False
 else:
     try:
-        ssl_ctx = ssl.create_default_context()
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode = ssl.CERT_NONE
+        ssl_ctx = ssl._create_unverified_context()
         connect_args["ssl_context"] = ssl_ctx
     except Exception as e:
         print(f"SSL context setup warning: {e}")
 
-from sqlalchemy.pool import NullPool
-
 engine_kwargs = {"connect_args": connect_args, "echo": False}
 if not db_url.startswith("sqlite"):
     engine_kwargs["poolclass"] = NullPool
+
 
 engine = create_engine(db_url, **engine_kwargs)
 
