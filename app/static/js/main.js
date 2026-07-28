@@ -205,8 +205,9 @@ async function loadTodayNews() {
     const tbody = document.getElementById("todayNewsBody");
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8;"><div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;"><div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...</td></tr>`;
 
+    const startTime = Date.now();
     try {
         let res = await fetch("/api/news?period=today");
         if (!res.ok) return;
@@ -220,6 +221,11 @@ async function loadTodayNews() {
                 const allData = await allRes.json();
                 items = allData.items || [];
             }
+        }
+
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 500) {
+            await new Promise(resolve => setTimeout(resolve, 500 - elapsed));
         }
 
         if (items.length === 0) {
