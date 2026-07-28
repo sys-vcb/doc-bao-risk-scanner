@@ -24,12 +24,26 @@
 }
 
 body {
-  background-color: var(--bg-dark);
+  background: #0a0a0c url('/static/images/BackGround.png') no-repeat center center fixed;
+  background-size: cover;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 12, 0.65);
+  z-index: -1;
+  pointer-events: none;
+}
+
 
 /* Glowing Background Orbs (Gold & Bronze Mesh Gradient) */
 .bg-orbs {
