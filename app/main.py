@@ -149,14 +149,15 @@ def serializable_scan_log(l: ScanLog) -> dict:
     return {
         "id": l.id,
         "scan_time": s_time,
-        "total_crawled": l.total_crawled if l.total_crawled is not None else 0,
-        "pre_filtered_count": l.pre_filtered_count if l.pre_filtered_count is not None else 0,
-        "articles_crawled": l.total_crawled if l.total_crawled is not None else 0,
-        "regex_passed": l.pre_filtered_count if l.pre_filtered_count is not None else 0,
-        "risks_extracted": l.risks_extracted if l.risks_extracted is not None else 0,
-        "status": l.status or "SUCCESS",
-        "message": l.message or ""
+        "total_crawled": getattr(l, "total_crawled", 0),
+        "pre_filtered_count": getattr(l, "pre_filtered_count", 0),
+        "articles_crawled": getattr(l, "total_crawled", 0),
+        "regex_passed": getattr(l, "pre_filtered_count", 0),
+        "risks_extracted": getattr(l, "risks_extracted", 0),
+        "status": getattr(l, "status", "SUCCESS") or "SUCCESS",
+        "message": getattr(l, "message", "") or ""
     }
+
 
 
 def serializable_site(s: MonitoredSite) -> dict:
