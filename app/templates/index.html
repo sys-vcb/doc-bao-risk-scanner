@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quét Tin Rủi Ro Doanh Nghiệp & Báo Cáo Tự Động</title>
+    <link rel="stylesheet" href="/static/css/glassmorphism.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+    <!-- Background Animated Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        
+        <!-- LEFT VERTICAL GLASS SIDEBAR -->
+        <aside class="glass-sidebar">
+            <div class="sidebar-brand">
+                <span style="font-size: 2.2rem;">⚜️</span>
+                <div>
+                    <h2 style="font-size: 1.15rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #fcd34d 50%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        VCB PRIORITY RISK
+                    </h2>
+                    <span class="badge-neon badge-yellow" style="font-size: 0.65rem; padding: 2px 6px;">Priority Edition</span>
+                </div>
+            </div>
+
+
+            <nav class="sidebar-menu">
+                <button class="tab-btn active" data-tab="tab-dashboard">
+                    <span>📊</span> Dashboard & Giám Sát
+                </button>
+                <button class="tab-btn" data-tab="tab-today">
+                    <span>📰</span> Tin Tức Hôm Nay
+                </button>
+                <button class="tab-btn" data-tab="tab-sites">
+                    <span>🌐</span> 9 Trang Báo Giám Sát
+                </button>
+                <button class="tab-btn" data-tab="tab-news">
+                    <span>📋</span> Tất Cả Tin Rủi Ro
+                </button>
+
+                <button class="tab-btn" data-tab="tab-analytics">
+                    <span>📈</span> Phân Tích & Biểu Đồ
+                </button>
+                <button class="tab-btn" data-tab="tab-email">
+                    <span>📧</span> Cấu Hình Email
+                </button>
+                <button class="tab-btn" data-tab="tab-logs">
+                    <span>📜</span> Nhật Ký Quét
+                </button>
+            </nav>
+
+            <div style="padding-top: 1rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
+                <div style="font-size: 0.75rem; color: #64748b; text-align: center;">
+                    Giám sát 6 Tỉnh thành<br>Quảng Ninh • Hải Phòng • Hưng Yên • Ninh Bình • Bắc Ninh • Phú Thọ
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT WRAPPER -->
+        <main class="main-wrapper">
+            
+            <!-- Top Header Action Bar -->
+            <header class="glass-panel" style="padding: 1.25rem 2rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 style="font-size: 1.35rem; font-weight: 800; color: #ffffff;">
+                        Hệ Thống Phân Tích & Cảnh Báo Rủi Ro Báo Chí
+                    </h1>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 2px;">
+                        Tự động cào tin bài, phân tích AI và tổng hợp báo cáo Excel & Word hằng ngày
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: #94a3b8; margin-right: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="chkAutoRefresh" style="accent-color: #06b6d4;">
+                        🔄 Làm mới (30s)
+                    </label>
+                    <button type="button" id="btnRunScan" onclick="triggerManualScan()" class="btn-glass btn-neon-primary pulse-glow">
+                        ⚡ Quét Thủ Công
+                    </button>
+
+                    <button id="btnDownloadExcel" class="btn-glass btn-neon-emerald">
+                        📊 Tải Excel (.xlsx)
+                    </button>
+                    <button id="btnDownloadDocx" class="btn-glass" style="font-size: 0.85rem;">
+                        📄 Tải Word (.docx)
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD & GIÁM SÁT REALTIME -->
+            <div id="tab-dashboard" class="tab-content active">
+                
+                <!-- KHUNG THIẾT LẬP QUÉT THỦ CÔNG THEO KHOẢNG THỜI GIAN & KHU VỰC -->
+                <div class="glass-panel" style="padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; border-left: 4px solid var(--accent-cyan);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h4 style="font-size: 1.05rem; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 0.5rem;">
+                                🎯 Tùy Chỉnh Khoảng Thời Gian & Khu Vực Quét Thủ Công
+                            </h4>
+                            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">
+                                Mặc định quét tin ngày hôm nay. Bạn có thể chọn khoảng ngày và khu vực tùy chỉnh để quét thủ công.
+                            </p>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <label style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600;">📅 Từ Ngày:</label>
+                                <input type="date" id="scanDateFrom" class="glass-input" style="padding: 0.4rem 0.6rem; font-size: 0.85rem; border-radius: 6px; color-scheme: dark;">
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <label style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600;">📅 Đến Ngày:</label>
+                                <input type="date" id="scanDateTo" class="glass-input" style="padding: 0.4rem 0.6rem; font-size: 0.85rem; border-radius: 6px; color-scheme: dark;">
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <label style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600;">📍 Khu Vực Quét:</label>
+                                <select id="scanProvince" class="glass-select" style="padding: 0.4rem 0.6rem; font-size: 0.85rem; border-radius: 6px; background: rgba(15, 23, 42, 0.8); color: #f8fafc;">
+                                    <option value="Tất cả">🌐 Toàn quốc (Tất cả Tỉnh thành)</option>
+                                    <option value="6 tỉnh ĐBSH">📍 6 Tỉnh ĐBSH (Vùng trọng điểm)</option>
+                                    <option value="Quảng Ninh">Quảng Ninh</option>
+                                    <option value="Hải Phòng">Hải Phòng</option>
+                                    <option value="Hưng Yên">Hưng Yên</option>
+                                    <option value="Ninh Bình">Ninh Bình</option>
+                                    <option value="Bắc Ninh">Bắc Ninh</option>
+                                    <option value="Phú Thọ">Phú Thọ</option>
+                                    <option value="Hà Nội">Hà Nội</option>
+                                    <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                </select>
+
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <label style="font-size: 0.75rem; color: #cbd5e1; font-weight: 600;">🔢 Số Bài / Báo:</label>
+                                <input type="number" id="scanMaxArticles" min="5" max="200" value="50" class="glass-input" style="padding: 0.4rem 0.6rem; font-size: 0.85rem; border-radius: 6px; width: 90px; color: #f8fafc;">
+                            </div>
+
+
+                            <div style="display: flex; align-items: flex-end;">
+                                <button type="button" id="btnRunScanDashboard" class="btn-glass btn-neon-primary pulse-glow" style="padding: 0.55rem 1.25rem; font-size: 0.9rem;">
+                                    ⚡ Quét Thủ Công
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Stat Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1rem;">
+                    <div class="glass-panel stat-card clickable-card" id="cardTotalRisks" title="Click để xem toàn bộ danh sách rủi ro">
+                        <div class="stat-icon" style="color: #ef4444;">⚠️</div>
+                        <div>
+                            <div id="statTotalRisks" class="stat-val">0</div>
+                            <div class="stat-label">Tổng số Rủi ro Phát hiện ↗</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel stat-card clickable-card" id="cardCrawledCount" title="Click để xem danh sách 9 trang báo đang giám sát">
+                        <div class="stat-icon" style="color: #38bdf8;">🌐</div>
+                        <div>
+                            <div id="statCrawledCount" class="stat-val">9 / 9</div>
+                            <div class="stat-label">Trang báo Đang Giám sát ↗</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel stat-card clickable-card" id="cardHotspot" title="Click để lọc theo tỉnh nóng nhất">
+                        <div class="stat-icon" style="color: #f59e0b;">🔥</div>
+                        <div>
+                            <div id="statHotspot" class="stat-val" style="font-size: 1.4rem;">Đang tải...</div>
+                            <div class="stat-label">Khu vực Nóng nhất ↗</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel stat-card clickable-card" id="cardNextScan" title="Lịch quét chạy tự động">
+                        <div class="stat-icon" style="color: #10b981;">⏰</div>
+                        <div>
+                            <div id="statNextScan" class="stat-val" style="font-size: 1.2rem;">07:00 / 17:00</div>
+                            <div class="stat-label">Lịch Quét Tự động Hằng ngày ↗</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- TAB 2: TIN TỨC HÔM NAY -->
+            <div id="tab-today" class="tab-content">
+                <main class="glass-panel" style="padding: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 700; color: #f8fafc;">
+                                📰 Cảnh Báo Tin Tức Rủi Ro Phát Hiện Trong Ngày Hôm Nay
+                            </h2>
+                            <p style="font-size: 0.8rem; color: #94a3b8;">Danh sách các rủi ro mới nhất ghi nhận trong ngày tra cứu hôm nay</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>1. Tên Doanh nghiệp / Cá nhân / Tổ chức</th>
+                                    <th>2. Nội dung tóm tắt rủi ro (2-3 câu)</th>
+                                    <th>3. Khu vực</th>
+                                    <th>4. Loại rủi ro</th>
+                                    <th>5. Ngày & Link bài gốc</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayNewsBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+
+
+
+            <!-- TAB 4: QUẢN LÝ TRANG BÁO ĐANG GIÁM SÁT -->
+            <div id="tab-sites" class="tab-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                    
+                    <!-- Form Thêm Trang Báo Mới -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            ➕ Thêm Trang Báo Mục Tiêu Mới
+                        </h3>
+                        <form id="addSiteForm" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Tên trang báo / Chuyên mục</label>
+                                <input type="text" id="siteName" class="glass-input" placeholder="Ví dụ: Báo Quảng Ninh (Pháp luật)" required style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Đường dẫn URL Chuyên mục cào tin</label>
+                                <input type="url" id="siteUrl" class="glass-input" placeholder="https://baoquangninh.vn/phap-luat" required style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Khu vực địa bàn gợi ý</label>
+                                <select id="siteProvince" class="glass-select" style="width: 100%;">
+                                    <option value="Toàn quốc">🌐 Toàn quốc</option>
+                                    <option value="Quảng Ninh">Quảng Ninh</option>
+                                    <option value="Hải Phòng">Hải Phòng</option>
+                                    <option value="Hưng Yên">Hưng Yên</option>
+                                    <option value="Ninh Bình">Ninh Bình</option>
+                                    <option value="Bắc Ninh">Bắc Ninh</option>
+                                    <option value="Phú Thọ">Phú Thọ</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-glass btn-neon-primary" style="margin-top: 0.5rem; justify-content: center;">
+                                ➕ Thêm Trang Báo Vào Hệ Thống
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Danh sách các trang báo đang hoạt động -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <div style="margin-bottom: 1.25rem;">
+                            <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc;">
+                                🌐 Danh Sách Các Trang Báo Đang Giám Sát
+                            </h3>
+                            <p style="font-size: 0.8rem; color: #94a3b8;">Hệ thống cào tự động và gửi dữ liệu sang cho Gemini AI thẩm định</p>
+                        </div>
+                        <div id="monitoredSitesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; max-height: 480px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- TAB 5: TẤT CẢ TIN RỦI RO & BỘ LỌC -->
+            <div id="tab-news" class="tab-content">
+                <main class="glass-panel" style="padding: 1.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 700; color: #f8fafc;">
+                                📋 Tất Cả Tin Cảnh Báo Rủi Ro Theo Khu Vực & Khoảng Thời Gian
+                            </h2>
+                            <p style="font-size: 0.8rem; color: #94a3b8;">Click vào từng hàng bài viết để xem chi tiết và thực hiện thao tác nhanh</p>
+                        </div>
+
+                        <!-- Full Controls -->
+                        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span style="font-size: 0.8rem; color: #94a3b8;">📅 Từ:</span>
+                                <input type="date" id="startDate" class="glass-input" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <span style="font-size: 0.8rem; color: #94a3b8;">Đến:</span>
+                                <input type="date" id="endDate" class="glass-input" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                            </div>
+                            <div>
+                                <select id="provinceFilter" class="glass-select" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                                    <option value="Tất cả">🌐 Toàn quốc (Tất cả Tỉnh thành)</option>
+                                    <option value="6 tỉnh ĐBSH">📍 6 Tỉnh ĐBSH (Vùng trọng điểm)</option>
+                                    <option value="Quảng Ninh">Quảng Ninh</option>
+                                    <option value="Hải Phòng">Hải Phòng</option>
+                                    <option value="Hưng Yên">Hưng Yên</option>
+                                    <option value="Ninh Bình">Ninh Bình</option>
+                                    <option value="Bắc Ninh">Bắc Ninh</option>
+                                    <option value="Phú Thọ">Phú Thọ</option>
+                                    <option value="Hà Nội">Hà Nội</option>
+                                    <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                </select>
+
+                            </div>
+                            <div>
+                                <select id="entityTypeFilter" class="glass-select" style="padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                                    <option value="Tất cả">🏢 Tất cả Đối tượng</option>
+                                    <option value="Doanh nghiệp">🏢 Chỉ Doanh nghiệp / Tổ chức</option>
+                                    <option value="Cá nhân">👤 Chỉ Cá nhân</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="text" id="searchInput" class="glass-input" placeholder="🔍 Tìm Doanh nghiệp..." style="width: 190px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-container">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>1. Tên Doanh nghiệp / Cá nhân / Tổ chức</th>
+                                    <th>2. Nội dung tóm tắt rủi ro (2-3 câu)</th>
+                                    <th>3. Khu vực</th>
+                                    <th>4. Loại rủi ro / Từ khóa</th>
+                                    <th>5. Ngày & Link bài gốc</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newsTableBody">
+                                <!-- Dynamic Content Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+
+            <!-- TAB 6: PHÂN TÍCH & BIỂU ĐỒ -->
+            <div id="tab-analytics" class="tab-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;">
+                    
+                    <!-- Analytics by Province -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🗺️ Phân Bổ Rủi Ro Theo 6 Tỉnh Thành
+                        </h3>
+                        <div id="provinceAnalyticsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Analytics by Category -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            🏷️ Phân Bổ Theo Nhóm Rủi Ro
+                        </h3>
+                        <div id="categoryAnalyticsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 7: CẤU HÌNH EMAIL CẢNH BÁO -->
+            <div id="tab-email" class="tab-content">
+                <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Email Form -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            📧 Cấu Hình Email Cảnh Báo Theo Khu Vực
+                        </h3>
+                        <form id="subscriberForm" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Họ và Tên người nhận</label>
+                                <input type="text" id="subName" class="glass-input" placeholder="Ví dụ: Nguyễn Văn A" required style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Địa chỉ Email</label>
+                                <input type="email" id="subEmail" class="glass-input" placeholder="nguyenvana@gmail.com" required style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Khu vực nhận cảnh báo</label>
+                                <select id="subProvince" class="glass-select" style="width: 100%;">
+                                    <option value="Tất cả">🔔 Tất cả Khu vực (6 tỉnh)</option>
+                                    <option value="Quảng Ninh">Quảng Ninh</option>
+                                    <option value="Hải Phòng">Hải Phòng</option>
+                                    <option value="Hưng Yên">Hưng Yên</option>
+                                    <option value="Ninh Bình">Ninh Bình</option>
+                                    <option value="Bắc Ninh">Bắc Ninh</option>
+                                    <option value="Phú Thọ">Phú Thọ</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-glass btn-neon-primary" style="margin-top: 0.5rem; justify-content: center;">
+                                ➕ Thêm Người Nhận Email
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Active Subscribers List -->
+                    <div class="glass-panel" style="padding: 1.75rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1rem;">
+                            👥 Danh Sách Email Đang Đăng Ký
+                        </h3>
+                        <div id="subscribersList" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 8: NHẬT KÝ QUÉT & HỆ THỐNG -->
+            <div id="tab-logs" class="tab-content">
+                <div class="glass-panel" style="padding: 1.75rem;">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 1rem;">
+                        📜 Lịch Sử Nhật Ký Quét Tự Động & Thủ Công (Audit Logs)
+                    </h3>
+                    <div class="table-container">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Tổng cào</th>
+                                    <th>Qua lọc Regex</th>
+                                    <th>Rủi ro trích xuất</th>
+                                    <th>Trạng thái</th>
+                                    <th>Chi tiết nhật ký</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <footer style="text-align: center; color: #64748b; font-size: 0.8rem; margin-top: 3rem; padding-bottom: 1rem;">
+                Risk News Scanner & Reporter © 2026 | Glassmorphism Vertical Sidebar Dashboard | Localhost Mode
+            </footer>
+        </main>
+    </div>
+
+    <!-- GLASSMORPHISM ARTICLE DETAIL MODAL POPUP -->
+    <div id="detailModal" class="modal-backdrop">
+        <div class="modal-card">
+            <button onclick="closeDetailModal()" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;">
+                ✕
+            </button>
+            <div style="margin-bottom: 1rem;">
+                <span id="modalProvBadge" class="badge-neon badge-blue">📍 Quảng Ninh</span>
+                <span id="modalRiskBadge" class="badge-neon badge-red" style="margin-left: 0.5rem;">⚠️ Khởi tố</span>
+            </div>
+            
+            <h2 id="modalEntity" style="font-size: 1.3rem; font-weight: 800; color: #ffffff; margin-bottom: 0.75rem; line-height: 1.4;">
+                Tên Doanh nghiệp / Đối tượng
+            </h2>
+
+            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.25rem; display: flex; gap: 1rem; align-items: center;">
+                <span id="modalPubDate">📅 Ngày đăng: 2026-07-26</span>
+                <span id="modalId">ID: #0</span>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.85rem; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                    📄 Nội dung tóm tắt rủi ro:
+                </h4>
+                <p id="modalSummary" style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.6;">
+                    Nội dung tóm tắt...
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                <button onclick="copyModalLink()" class="btn-glass" style="font-size: 0.85rem;">
+                    📋 Copy Link Bài Viết
+                </button>
+                <a id="modalSourceBtn" href="#" target="_blank" class="btn-glass btn-neon-primary" style="font-size: 0.85rem; text-decoration: none;">
+                    🌐 Mở Bài Báo Gốc ↗
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

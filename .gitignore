@@ -1,0 +1,28 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Databases
+*.db
+risk_scanner.db
+
+# Storage & Reports
+storage/reports/*
+!storage/reports/.gitkeep
+
+# IDEs
+.idea/
+.vscode/
+.antigravity/
+
+# Temporary OS files
+.DS_Store
+Thumbs.db
