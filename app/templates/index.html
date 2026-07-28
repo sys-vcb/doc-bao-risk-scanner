@@ -40,16 +40,12 @@
 
 
             <nav class="sidebar-menu">
-                <button class="tab-btn active" data-tab="tab-today">
-                    <span>📰</span> Tin Tức Hôm Nay
-                </button>
-                <button class="tab-btn" data-tab="tab-dashboard">
+                <button class="tab-btn active" data-tab="tab-dashboard">
                     <span>📊</span> Tổng Quan
                 </button>
                 <button class="tab-btn" data-tab="tab-news">
                     <span>📋</span> Tất Cả Tin Rủi Ro
                 </button>
-
                 <button class="tab-btn" data-tab="tab-analytics">
                     <span>📈</span> Phân Tích & Biểu Đồ
                 </button>
@@ -63,6 +59,7 @@
                     <span>📜</span> Nhật Ký Quét
                 </button>
             </nav>
+
 
 
 
@@ -106,7 +103,8 @@
             </header>
 
             <!-- TAB 1: TỔNG QUAN GIÁM SÁT -->
-            <div id="tab-dashboard" class="tab-content">
+            <div id="tab-dashboard" class="tab-content active">
+
 
                 
                 <!-- KHUNG THIẾT LẬP QUÉT THỦ CÔNG THEO KHOẢNG THỜI GIAN & KHU VỰC -->
@@ -236,51 +234,8 @@
             </div>
 
 
-            <!-- TAB 2: TIN TỨC HÔM NAY -->
-            <div id="tab-today" class="tab-content active">
 
-                <main class="glass-panel" style="padding: 1.75rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                        <div>
-                            <h2 style="font-size: 1.25rem; font-weight: 700; color: #f8fafc;">
-                                📰 Cảnh Báo Tin Tức Rủi Ro Phát Hiện Trong Ngày Hôm Nay
-                            </h2>
-                            <p style="font-size: 0.8rem; color: #94a3b8;">Danh sách các rủi ro mới nhất ghi nhận trong ngày tra cứu hôm nay</p>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="glass-table">
-                            <thead>
-                                <tr>
-                                    <th>1. Tên Doanh nghiệp / Cá nhân / Tổ chức</th>
-                                    <th>2. Nội dung tóm tắt rủi ro (2-3 câu)</th>
-                                    <th>3. Khu vực</th>
-                                    <th>4. Loại rủi ro</th>
-                                    <th>5. Ngày & Link bài gốc</th>
-                                </tr>
-                            </thead>
-                            <tbody id="todayOnlyNewsBody">
-                                <tr>
-                                    <td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;">
-                                        <div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </main>
-            </div>
->
-                                    <td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;">
-                                        <div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...
-                                    </td>
-                                </tr>
-                            </tbody>
 
-                        </table>
-                    </div>
-                </main>
-            </div>
 
 
 
