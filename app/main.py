@@ -110,6 +110,15 @@ def seed_demo_data_if_empty():
         db.close()
 
 def serializable_risk_item(i: RiskItem) -> dict:
+    c_at = None
+    if i.created_at:
+        if isinstance(i.created_at, str):
+            c_at = i.created_at
+        elif hasattr(i.created_at, "strftime"):
+            c_at = i.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            c_at = str(i.created_at)
+
     return {
         "id": i.id,
         "article_id": i.article_id,
@@ -121,13 +130,22 @@ def serializable_risk_item(i: RiskItem) -> dict:
         "published_date": i.published_date or "",
         "source_url": i.source_url or "",
         "is_ai_extracted": bool(i.is_ai_extracted),
-        "created_at": i.created_at.strftime("%Y-%m-%d %H:%M:%S") if i.created_at else None
+        "created_at": c_at
     }
 
 def serializable_scan_log(l: ScanLog) -> dict:
+    s_time = None
+    if l.scan_time:
+        if isinstance(l.scan_time, str):
+            s_time = l.scan_time
+        elif hasattr(l.scan_time, "strftime"):
+            s_time = l.scan_time.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            s_time = str(l.scan_time)
+
     return {
         "id": l.id,
-        "scan_time": l.scan_time.strftime("%Y-%m-%d %H:%M:%S") if l.scan_time else None,
+        "scan_time": s_time,
         "articles_crawled": l.articles_crawled,
         "regex_passed": l.regex_passed,
         "risks_extracted": l.risks_extracted,
@@ -136,14 +154,24 @@ def serializable_scan_log(l: ScanLog) -> dict:
     }
 
 def serializable_site(s: MonitoredSite) -> dict:
+    c_at = None
+    if s.created_at:
+        if isinstance(s.created_at, str):
+            c_at = s.created_at
+        elif hasattr(s.created_at, "strftime"):
+            c_at = s.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            c_at = str(s.created_at)
+
     return {
         "id": s.id,
         "name": s.name,
         "url": s.url,
         "province_hint": s.province_hint or "Toàn quốc",
         "is_active": bool(s.is_active),
-        "created_at": s.created_at.strftime("%Y-%m-%d %H:%M:%S") if s.created_at else None
+        "created_at": c_at
     }
+
 
 # Web Dashboard Page
 @app.get("/", response_class=HTMLResponse)
