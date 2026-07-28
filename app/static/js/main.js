@@ -205,6 +205,8 @@ async function loadTodayNews() {
     const tbody = document.getElementById("todayNewsBody");
     if (!tbody) return;
 
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8;"><div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...</td></tr>`;
+
     try {
         let res = await fetch("/api/news?period=today");
         if (!res.ok) return;
@@ -229,8 +231,10 @@ async function loadTodayNews() {
         window._todayItems = items;
     } catch (err) {
         console.error("Lỗi tải tin hôm nay:", err);
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">❌ Lỗi tải dữ liệu: ${err.message}</td></tr>`;
     }
 }
+
 
 
 async function loadEarlierNews() {
@@ -532,34 +536,58 @@ async function loadScanLogs() {
     const tbody = document.getElementById("logsTableBody");
     if (!tbody) return;
 
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #94a3b8;"><div class="spinner"></div> Đang kết nối CSDL và tải nhật ký quét...</td></tr>`;
+
     try {
         const res = await fetch("/api/logs");
         if (!res.ok) return;
 
         const logs = await res.json();
-        if (logs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b;">Chưa có nhật ký quét nào.</td></tr>`;
+        if (!logs || logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">Chưa có nhật ký quét nào.</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = logs.map(log => `
-            <tr>
-                <td style="font-size: 0.85rem; color: #94a3b8;">${new Date(log.scan_time).toLocaleString('vi-VN')}</td>
-                <td>${log.total_crawled} bài</td>
-                <td>${log.pre_filtered_count} bài</td>
-                <td style="font-weight: 700; color: #10b981;">${log.risks_extracted} rủi ro</td>
-                <td>
-                    <span class="badge-neon ${log.status === 'SUCCESS' ? 'badge-green' : 'badge-red'}">
-                        ${log.status}
-                    </span>
-                </td>
-                <td style="font-size: 0.85rem; color: #cbd5e1;">${escapeHtml(log.message || "")}</td>
-            </tr>
-        `).join("");
+        tbody.innerHTML = logs.map(log => {
+            let timeStr = log.scan_time || "";
+            let formattedTime = timeStr;
+            try {
+                if (timeStr) {
+                    const isoTime = timeStr.replace(" ", "T");
+                    formattedTime = new Date(isoTime).toLocaleString('vi-VN');
+                    if (formattedTime === "Invalid Date") formattedTime = timeStr;
+                }
+            } catch (e) {
+                formattedTime = timeStr;
+            }
+
+            const crawled = log.total_crawled !== undefined ? log.total_crawled : (log.articles_crawled || 0);
+            const filtered = log.pre_filtered_count !== undefined ? log.pre_filtered_count : (log.regex_passed || 0);
+            const risks = log.risks_extracted || 0;
+            const status = log.status || "SUCCESS";
+            const msg = log.message || "";
+
+            return `
+                <tr>
+                    <td style="font-size: 0.85rem; color: #94a3b8;">${escapeHtml(formattedTime)}</td>
+                    <td>${crawled} bài</td>
+                    <td>${filtered} bài</td>
+                    <td style="font-weight: 700; color: #10b981;">${risks} rủi ro</td>
+                    <td>
+                        <span class="badge-neon ${status === 'SUCCESS' ? 'badge-green' : 'badge-red'}">
+                            ${escapeHtml(status)}
+                        </span>
+                    </td>
+                    <td style="font-size: 0.85rem; color: #cbd5e1;">${escapeHtml(msg)}</td>
+                </tr>
+            `;
+        }).join("");
     } catch (err) {
         console.error("Lỗi tải scan logs:", err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #ef4444;">❌ Lỗi khi tải nhật ký: ${err.message}</td></tr>`;
     }
 }
+
 
 let isScanInProgress = false;
 
