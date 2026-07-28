@@ -238,7 +238,7 @@ def get_risk_news(
 
 # API: Health Check trạng thái CSDL Supabase
 @app.get("/api/health")
-def health_check():
+def health_check(db: Session = Depends(get_db)):
     import os
     from app.database import sanitize_db_url
     raw_env = os.getenv("DATABASE_URL", "")
@@ -255,14 +255,26 @@ def health_check():
         masked_sanitized = "***@" + sanitized[last_at+1:]
 
     is_supabase = "supabase" in raw_env or "postgres" in raw_env
+    
+    risk_count = 0
+    article_count = 0
+    try:
+        risk_count = db.query(RiskItem).count()
+        article_count = db.query(Article).count()
+    except Exception as e:
+        print(f"Error counting in health: {e}")
+
     return {
         "status": "OK",
         "using_supabase": is_supabase,
         "database_type": "PostgreSQL (Supabase)" if is_supabase else "SQLite (Fallback)",
         "has_gemini_key": bool(os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY),
         "masked_raw_env": masked_raw,
-        "masked_sanitized_db_url": masked_sanitized
+        "masked_sanitized_db_url": masked_sanitized,
+        "risk_items_in_db": risk_count,
+        "articles_in_db": article_count
     }
+
 
 
 
