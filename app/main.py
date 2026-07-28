@@ -143,6 +143,21 @@ def get_risk_news(
     return {"total": len(items), "items": items}
 
 
+# API: Health Check trạng thái CSDL Supabase
+@app.get("/api/health")
+def health_check():
+    import os
+    db_env = os.getenv("DATABASE_URL", "")
+    is_supabase = "supabase" in db_env or "postgres" in db_env
+    return {
+        "status": "OK",
+        "using_supabase": is_supabase,
+        "database_type": "PostgreSQL (Supabase)" if is_supabase else "SQLite (Fallback)",
+        "has_gemini_key": bool(os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY)
+    }
+
+
+
 # Pydantic Schemas cho Quản lý Trang báo
 class SiteCreateSchema(BaseModel):
     name: str
