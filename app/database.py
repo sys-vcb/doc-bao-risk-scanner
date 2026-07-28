@@ -44,11 +44,14 @@ else:
     except Exception as e:
         print(f"SSL context setup warning: {e}")
 
+from sqlalchemy.pool import NullPool
+
 engine_kwargs = {"connect_args": connect_args, "echo": False}
 if not db_url.startswith("sqlite"):
-    engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["poolclass"] = NullPool
 
 engine = create_engine(db_url, **engine_kwargs)
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
