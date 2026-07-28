@@ -92,6 +92,42 @@ def seed_demo_data_if_empty():
     finally:
         db.close()
 
+def serializable_risk_item(i: RiskItem) -> dict:
+    return {
+        "id": i.id,
+        "article_id": i.article_id,
+        "entity_name": i.entity_name or "",
+        "entity_type": i.entity_type or "Doanh nghiệp",
+        "summary": i.summary or "",
+        "province": i.province or "Toàn quốc",
+        "risk_type": i.risk_type or "",
+        "published_date": i.published_date or "",
+        "source_url": i.source_url or "",
+        "is_ai_extracted": bool(i.is_ai_extracted),
+        "created_at": i.created_at.strftime("%Y-%m-%d %H:%M:%S") if i.created_at else None
+    }
+
+def serializable_scan_log(l: ScanLog) -> dict:
+    return {
+        "id": l.id,
+        "scan_time": l.scan_time.strftime("%Y-%m-%d %H:%M:%S") if l.scan_time else None,
+        "articles_crawled": l.articles_crawled,
+        "regex_passed": l.regex_passed,
+        "risks_extracted": l.risks_extracted,
+        "status": l.status or "SUCCESS",
+        "message": l.message or ""
+    }
+
+def serializable_site(s: MonitoredSite) -> dict:
+    return {
+        "id": s.id,
+        "name": s.name,
+        "url": s.url,
+        "province_hint": s.province_hint or "Toàn quốc",
+        "is_active": bool(s.is_active),
+        "created_at": s.created_at.strftime("%Y-%m-%d %H:%M:%S") if s.created_at else None
+    }
+
 # Web Dashboard Page
 @app.get("/", response_class=HTMLResponse)
 def render_dashboard(request: Request):
@@ -101,8 +137,8 @@ def render_dashboard(request: Request):
 # API: Lấy danh sách tin rủi ro (hỗ trợ lọc Ngày từ - đến, Tỉnh, Loại đối tượng và Kỳ tin hôm nay)
 @app.get("/api/news")
 def get_risk_news(
-    province: str = Query("Tất cả"),
-    entity_type: str = Query("Tất cả"), # "Tất cả", "Doanh nghiệp", "Cá nhân"
+    province: Optional[str] = Query(None),
+    entity_type: Optional[str] = Query(None), # "Tất cả", "Doanh nghiệp", "Cá nhân"
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
     period: Optional[str] = Query(None), # "today" hoặc "earlier"
@@ -143,7 +179,8 @@ def get_risk_news(
         )
         
     items = query.order_by(RiskItem.id.desc()).all()
-    return {"total": len(items), "items": items}
+    item_dicts = [serializable_risk_item(i) for i in items]
+    return {"total": len(item_dicts), "items": item_dicts}
 
 
 # API: Health Check trạng thái CSDL Supabase
@@ -167,15 +204,11 @@ class SiteCreateSchema(BaseModel):
     url: str
     province_hint: Optional[str] = "Toàn quốc"
 
-@app.on_event("startup")
-def startup_event():
-    init_db()
-
 # API: Lấy danh sách Trang báo đang giám sát từ CSDL
 @app.get("/api/sites")
 def get_monitored_sites(db: Session = Depends(get_db)):
     sites = db.query(MonitoredSite).filter(MonitoredSite.is_active == True).all()
-    return sites
+    return [serializable_site(s) for s in sites]
 
 # API: Thêm Trang báo giám sát mới
 @app.post("/api/sites")
@@ -192,7 +225,7 @@ def add_monitored_site(site_data: SiteCreateSchema, db: Session = Depends(get_db
     db.add(new_site)
     db.commit()
     db.refresh(new_site)
-    return new_site
+    return serializable_site(new_site)
 
 # API: Xóa Trang báo giám sát
 @app.delete("/api/sites/{site_id}")
@@ -270,7 +303,7 @@ def get_analytics_data(db: Session = Depends(get_db)):
 @app.get("/api/logs")
 def get_scan_logs(db: Session = Depends(get_db)):
     logs = db.query(ScanLog).order_by(ScanLog.id.desc()).limit(20).all()
-    return logs
+    return [serializable_scan_log(l) for l in logs]
 
 class ManualScanPayload(BaseModel):
     date_from: Optional[str] = None
