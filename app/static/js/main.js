@@ -586,7 +586,12 @@ async function triggerManualScan() {
             })
         });
 
+        if (res.status === 504 || res.status === 502) {
+            throw new Error("Quá thời gian chờ của Vercel Serverless (Timeout). Vui lòng hạ số bài/báo xuống 15-20 bài hoặc chờ Lịch quét tự động 07:00 & 17:00!");
+        }
+
         const data = await res.json();
+
 
         if (res.ok && data.status === "SUCCESS") {
             showToast(`✅ Cào hoàn tất! Phát hiện ${data.risks_extracted} rủi ro mới.`, "success");
