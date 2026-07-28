@@ -98,7 +98,8 @@ async def execute_full_scan_pipeline(
 
         # Lấy danh sách rủi ro trong ngày
         today_str = datetime.now().strftime("%Y-%m-%d")
-        all_today_risks = db.query(RiskItem).all()
+        all_today_risks = db.query(RiskItem).order_by(RiskItem.published_date.desc(), RiskItem.id.desc()).all()
+
 
         # Step 5: Xuất file Excel (.xlsx) và Word (.docx)
         excel_path = generate_excel_report(all_today_risks, date_from=today_str, date_to=today_str)

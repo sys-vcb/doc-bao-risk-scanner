@@ -13,7 +13,8 @@ from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.config import TARGET_SITES, get_vietnam_today_str
+from app.config import TARGET_SITES, get_vietnam_today_str, VN_TZ
+
 from app.models import Article
 from app.scraper.regex_filter import pre_filter_article, is_date_within_t_minus_1, is_date_in_range
 
@@ -79,16 +80,29 @@ def parse_article_links(base_url: str, html: str) -> List[str]:
     return list(links)
 
 def parse_raw_date_to_iso(found_raw: str) -> str:
-    """Parse chuỗi ngày thô đa dạng (YYYY-MM-DD, DD/MM/YYYY, M/D/YYYY) sang YYYY-MM-DD"""
+    """Parse chuỗi ngày thô đa dạng sang YYYY-MM-DD theo đúng múi giờ GMT+7 Việt Nam"""
     if not found_raw:
         return ""
-        
+
+    # 1. Thử parse ISO 8601 chứa múi giờ (VD: 2026-07-27T23:58:00Z hoặc 2026-07-27T23:58:00+00:00)
+    try:
+        clean_iso = found_raw.strip().replace("Z", "+00:00")
+        if "T" in clean_iso or "+" in clean_iso:
+            dt = datetime.fromisoformat(clean_iso)
+            if dt.tzinfo:
+                dt_vn = dt.astimezone(VN_TZ)
+                return dt_vn.strftime("%Y-%m-%d")
+    except Exception:
+        pass
+
+    # 2. Parse chuỗi YYYY-MM-DD
     m_iso = re.search(r'(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})', found_raw)
     if m_iso:
         y, m, d = map(int, m_iso.groups())
         if 2000 <= y <= 2100 and 1 <= m <= 12 and 1 <= d <= 31:
             return f"{y:04d}-{m:02d}-{d:02d}"
 
+    # 3. Parse chuỗi DD/MM/YYYY hoặc MM/DD/YYYY
     m_mdy = re.search(r'(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})', found_raw)
     if m_mdy:
         p1, p2, y = map(int, m_mdy.groups())
@@ -101,6 +115,7 @@ def parse_raw_date_to_iso(found_raw: str) -> str:
                 return f"{y:04d}-{p2:02d}-{p1:02d}" # Mặc định DD/MM/YYYY
 
     return ""
+
 
 def extract_clean_pub_date(url: str, html: str, soup: BeautifulSoup) -> str:
     """

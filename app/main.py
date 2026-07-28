@@ -227,7 +227,8 @@ def get_risk_news(
                 (RiskItem.risk_type.like(search_pattern))
             )
             
-        items = query.order_by(RiskItem.id.desc()).all()
+        items = query.order_by(RiskItem.published_date.desc(), RiskItem.id.desc()).all()
+
         item_dicts = [serializable_risk_item(i) for i in items]
         return {"total": len(item_dicts), "items": item_dicts}
     except Exception as exc:
