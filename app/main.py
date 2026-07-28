@@ -36,15 +36,8 @@ async def global_exception_handler(request: Request, exc: Exception):
             "error_type": type(exc).__name__,
             "message": str(exc),
             "traceback": err_tb
-        }
-@app.middleware("http")
-async def add_no_cache_header(request: Request, call_next):
-    response = await call_next(request)
-    if request.url.path.startswith("/api/"):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
-    return response
+    )
+
 
 
 
