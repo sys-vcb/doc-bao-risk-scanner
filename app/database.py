@@ -66,7 +66,10 @@ def init_db():
     try:
         from app import models
         from app.config import TARGET_SITES
-        Base.metadata.create_all(bind=engine)
+        
+        # Chỉ gọi create_all() với SQLite local, bỏ qua cho Supabase PostgreSQL để khởi động trong < 0.1s
+        if db_url.startswith("sqlite"):
+            Base.metadata.create_all(bind=engine)
         
         db = SessionLocal()
         try:
@@ -84,4 +87,5 @@ def init_db():
             db.close()
     except Exception as err:
         print(f"Lỗi init_db trên môi trường Vercel: {err}")
+
 
