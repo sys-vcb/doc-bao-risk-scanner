@@ -170,7 +170,7 @@
                     <div class="glass-panel stat-card clickable-card" id="cardTotalRisks" title="Click để xem toàn bộ danh sách rủi ro">
                         <div class="stat-icon" style="color: #ef4444;">⚠️</div>
                         <div>
-                            <div id="statTotalRisks" class="stat-val">0</div>
+                            <div id="statTotalRisks" class="stat-val"><div class="spinner" style="width:16px;height:16px;"></div></div>
                             <div class="stat-label">Tổng số Rủi ro Phát hiện ↗</div>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                     <div class="glass-panel stat-card clickable-card" id="cardHotspot" title="Click để lọc theo tỉnh nóng nhất">
                         <div class="stat-icon" style="color: #f59e0b;">🔥</div>
                         <div>
-                            <div id="statHotspot" class="stat-val" style="font-size: 1.4rem;">Đang tải...</div>
+                            <div id="statHotspot" class="stat-val" style="font-size: 1.2rem;"><div class="spinner" style="width:16px;height:16px;"></div> Đang tải...</div>
                             <div class="stat-label">Khu vực Nóng nhất ↗</div>
                         </div>
                     </div>
@@ -198,7 +198,40 @@
                             <div class="stat-label">Lịch Quét Tự động Hằng ngày ↗</div>
                         </div>
                     </div>
+
                 </div>
+
+                <!-- MAIN RISK NEWS WARNING TABLE INSIDE TỔNG QUAN -->
+                <main class="glass-panel" style="padding: 1.75rem; margin-top: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="font-size: 1.25rem; font-weight: 700; color: #f8fafc;">
+                                📰 Cảnh Báo Tin Tức Rủi Ro Phát Hiện Mới Nhất
+                            </h2>
+                            <p style="font-size: 0.8rem; color: #94a3b8;">Danh sách các rủi ro tin tức được bóc tách và phân tích AI mới nhất</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>1. Tên Doanh nghiệp / Cá nhân / Tổ chức</th>
+                                    <th>2. Nội dung tóm tắt rủi ro (2-3 câu)</th>
+                                    <th>3. Khu vực</th>
+                                    <th>4. Loại rủi ro</th>
+                                    <th>5. Ngày & Link bài gốc</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayNewsBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;">
+                                        <div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
             </div>
 
 
@@ -224,8 +257,18 @@
                                     <th>5. Ngày & Link bài gốc</th>
                                 </tr>
                             </thead>
-                            <tbody id="todayNewsBody">
+                            <tbody id="todayOnlyNewsBody">
                                 <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;">
+                                        <div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+>
                                     <td colspan="5" style="text-align: center; padding: 2.5rem; color: #94a3b8; font-weight: 500;">
                                         <div class="spinner"></div> Đang kết nối CSDL Supabase và tải tin rủi ro mới nhất...
                                     </td>
