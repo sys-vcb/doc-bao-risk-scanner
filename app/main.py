@@ -17,18 +17,21 @@ from app.services.scheduler import start_scheduler, execute_full_scan_pipeline
 from app.services.docx_exporter import generate_daily_docx_report
 from app.services.excel_exporter import generate_excel_report
 
-# Tạo database tables
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(
     title=settings.APP_NAME,
     description="Hệ thống tự động quét tin tức rủi ro doanh nghiệp, xuất báo cáo Excel/Word và gửi Email cảnh báo",
     version="2.0.0"
 )
 
-# Mount Static Files & Templates
-app.mount("/static", StaticFiles(directory=str(BASE_DIR / "app" / "static")), name="static")
-templates = Jinja2Templates(directory=str(BASE_DIR / "app" / "templates"))
+# Mount Static Files & Templates an toàn cho Serverless
+static_dir = BASE_DIR / "app" / "static"
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+templates_dir = BASE_DIR / "app" / "templates"
+if templates_dir.exists():
+    templates = Jinja2Templates(directory=str(templates_dir))
+
 
 # Startup Event
 @app.on_event("startup")
