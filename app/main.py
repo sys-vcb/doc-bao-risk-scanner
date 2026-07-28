@@ -181,51 +181,59 @@ def render_dashboard(request: Request):
 
 # API: Lấy danh sách tin rủi ro (hỗ trợ lọc Ngày từ - đến, Tỉnh, Loại đối tượng và Kỳ tin hôm nay)
 @app.get("/api/news")
+
 def get_risk_news(
     province: Optional[str] = Query(None),
     entity_type: Optional[str] = Query(None), # "Tất cả", "Doanh nghiệp", "Cá nhân"
     date_from: Optional[str] = Query(None),
     date_to: Optional[str] = Query(None),
     period: Optional[str] = Query(None), # "today" hoặc "earlier"
-    search: str = Query(""),
+    search: Optional[str] = Query(""),
     db: Session = Depends(get_db)
 ):
-    query = db.query(RiskItem)
-    today_str = get_vietnam_today_str()
-    
-    if period == "today":
-        query = query.filter(RiskItem.published_date >= today_str)
-    elif period in ["earlier", "past"]:
-        query = query.filter(RiskItem.published_date < today_str)
-
-    if province and province != "Tất cả":
-        if province in ["6 tỉnh ĐBSH", "ĐBSH", "Vùng trọng điểm"]:
-            dbsh_list = ["Quảng Ninh", "Hải Phòng", "Hưng Yên", "Ninh Bình", "Bắc Ninh", "Phú Thọ"]
-            query = query.filter(RiskItem.province.in_(dbsh_list))
-        else:
-            query = query.filter(RiskItem.province == province)
-
-
-    if entity_type and entity_type != "Tất cả":
-        query = query.filter(RiskItem.entity_type == entity_type)
+    try:
+        query = db.query(RiskItem)
+        today_str = get_vietnam_today_str()
         
-    if date_from:
-        query = query.filter(RiskItem.published_date >= date_from)
-        
-    if date_to:
-        query = query.filter(RiskItem.published_date <= date_to)
+        if period == "today":
+            query = query.filter(RiskItem.published_date >= today_str)
+        elif period in ["earlier", "past"]:
+            query = query.filter(RiskItem.published_date < today_str)
 
-    if search:
-        search_pattern = f"%{search}%"
-        query = query.filter(
-            (RiskItem.entity_name.like(search_pattern)) | 
-            (RiskItem.summary.like(search_pattern)) | 
-            (RiskItem.risk_type.like(search_pattern))
+        if province and province != "Tất cả":
+            if province in ["6 tỉnh ĐBSH", "ĐBSH", "Vùng trọng điểm"]:
+                dbsh_list = ["Quảng Ninh", "Hải Phòng", "Hưng Yên", "Ninh Bình", "Bắc Ninh", "Phú Thọ"]
+                query = query.filter(RiskItem.province.in_(dbsh_list))
+            else:
+                query = query.filter(RiskItem.province == province)
+
+        if entity_type and entity_type != "Tất cả":
+            query = query.filter(RiskItem.entity_type == entity_type)
+            
+        if date_from:
+            query = query.filter(RiskItem.published_date >= date_from)
+            
+        if date_to:
+            query = query.filter(RiskItem.published_date <= date_to)
+
+        if search:
+            search_pattern = f"%{search}%"
+            query = query.filter(
+                (RiskItem.entity_name.like(search_pattern)) | 
+                (RiskItem.summary.like(search_pattern)) | 
+                (RiskItem.risk_type.like(search_pattern))
+            )
+            
+        items = query.order_by(RiskItem.id.desc()).all()
+        item_dicts = [serializable_risk_item(i) for i in items]
+        return {"total": len(item_dicts), "items": item_dicts}
+    except Exception as exc:
+        err_tb = traceback.format_exc()
+        return JSONResponse(
+            status_code=500,
+            content={"status": "ERROR", "error": str(exc), "traceback": err_tb}
         )
-        
-    items = query.order_by(RiskItem.id.desc()).all()
-    item_dicts = [serializable_risk_item(i) for i in items]
-    return {"total": len(item_dicts), "items": item_dicts}
+
 
 
 # API: Health Check trạng thái CSDL Supabase
